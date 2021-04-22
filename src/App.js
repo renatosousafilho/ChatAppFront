@@ -1,11 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
 
-import Chat from './pages/Chat';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Routes from './routes';
 
 function App() {
   return (
-    <Chat />
+    <Router>
+      <Routes />
+    </Router>
   );
 }
 

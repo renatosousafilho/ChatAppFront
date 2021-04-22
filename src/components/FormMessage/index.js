@@ -2,26 +2,18 @@ import React, { useState } from 'react';
 
 import socket from '../../utils/socketClient';
 
-function FormMessage() {
+function FormMessage({dest}) {
   const [message, setMessage] = useState('');
-  const [username, setUsername] = useState('');
-
+  
   const handleSend = (e) => {
     e.preventDefault();
-    localStorage.setItem('username', username);
-    socket.emit('chat.sendMessage', { message, username });
+    const from = localStorage.getItem('currentUser');
+    console.log(dest);
+    socket.emit('chat.sendMessage', { message, from, dest });
   }
 
   return (
     <form onSubmit={handleSend}>
-      <div class="msger-inputarea">
-        <input 
-          type="text" 
-          class="msger-input" 
-          placeholder="Digite seu nome de usuário..." 
-          onChange={(e) => setUsername(e.target.value)}
-          />
-      </div>
       <div class="msger-inputarea">
         <input 
           type="text" 

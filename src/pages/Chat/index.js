@@ -8,19 +8,23 @@ import MessageBox from '../../components/MessageBox';
 import FormMessage from '../../components/FormMessage';
 
 import socket from '../../utils/socketClient';
+import { useParams } from 'react-router';
 
 function Chat() {
-  // const messages = [
-  //   { user: 'Renato', sentAt: '11:00', message: 'oi', isMine: true },
-  //   { user: 'Coruja', sentAt: '11:01', message: 'e ai', isMine: false },
-  //   { user: 'Coruja', sentAt: '11:01', message: 'tudo bem?', isMine: false },
-  //   { user: 'Renato', sentAt: '11:01', message: 'tudo certo e ctg?', isMine: false }
-  // ]
+  const { username } = useParams();
 
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
+    const from = localStorage.getItem('currentUser');
+    const to = username;
+
+    const key = [from, to].sort().join('-');
+    
+    socket.emit('connectRoom', key);
+
     socket.on('chat.receiveMessage', (data) => {
+      console.log(data);
       setMessages([...messages, data])
     });
   }, [messages]);
@@ -30,7 +34,8 @@ function Chat() {
     <section class="msger">
       <header class="msger-header">
         <div class="msger-header-title">
-          <i class="fas fa-comment-alt"></i> SimpleChat
+          <i class="fas fa-comment-alt"></i>
+          De: {localStorage.getItem('currentUser')} para {username}
         </div>
         <div class="msger-header-options">
           <span><i class="fas fa-cog"></i></span>
@@ -38,16 +43,16 @@ function Chat() {
       </header>
 
       <main class="msger-chat">
-        {messages.map(({username: user, sentAt, message}) => (
+        {messages.map(({from: user, sentAt, message}) => (
           <MessageBox 
-            isMine={user === localStorage.getItem('username')} 
+            isMine={user === localStorage.getItem('currentUser')} 
             user={user} 
             sentAt={sentAt} 
             message={message} /> 
         ))}
       </main>
 
-      <FormMessage />
+      <FormMessage dest={username} />
     </section>
   );
 }
